@@ -1,6 +1,7 @@
 import pickle
 import time
 import uuid
+import redis
 
 try:
     import kombu
@@ -128,7 +129,7 @@ class KombuManager(PubSubManager):  # pragma: no cover
                             message.ack()
                             yield message.payload
                             retry_sleep = 1
-            except (OSError, kombu.exceptions.KombuError):
+            except (OSError, kombu.exceptions.KombuError, redis.exceptions.ConnectionError):
                 self._get_logger().error(
                     'Cannot receive from rabbitmq... '
                     'retrying in {} secs'.format(retry_sleep))
